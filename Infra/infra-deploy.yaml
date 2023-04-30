@@ -1,0 +1,16 @@
+steps:
+  - id: 'tf vars'
+    dir: 'Infra/terraform'
+    name: 'gcr.io/cloud-builders/gsutil'
+    args: ['cp', 'gs://$_BUCKET/gcp.tfvars', 'gcp.tfvars']
+  - id: 'tf init'
+    dir: 'Infra/terraform'
+    name: 'hashicorp/terraform:1.2.4'
+    args: ['init', '-backend-config=bucket=$_BUCKET']
+  - id: 'tf apply'
+    dir: 'Infra/terraform'
+    waitFor: ['tf vars', 'tf init']
+    name: 'hashicorp/terraform:1.2.4'
+    args: ['apply', '-auto-approve', '-var-file=gcp.tfvars']
+options:
+  logging: CLOUD_LOGGING_ONLY
