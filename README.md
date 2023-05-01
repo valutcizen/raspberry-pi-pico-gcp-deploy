@@ -7,6 +7,11 @@ Instalation istructions for this repo.
 ## Cloud Infrastructure
 You can deploy infrastructure from local machine (best for usage) or by Cloud Build (best for development).
 
+First you have to prepare a `gcp.tfvars` file with content:
+> project = "your project name"
+> region  = "your region"
+> zone    = "your zone"
+
 ### Manual
 Prerequrements: 
 - [Terraform](https://developer.hashicorp.com/terraform/downloads) installed.
@@ -14,9 +19,10 @@ Prerequrements:
 
 Steps:
 1. Change location to "Infra/terraform" directory.
-2. Initialize terraform by `terraform init -backend-config=[yours-bucket-name]` (replace `[yours-bucket-name]` with yours terraform state bucket name).
-3. Optional `terraform plan` to see changes to do.
-4. Make the changes by `terraform apply`.
+2. Copy `gcp.tfvars` to this location.
+3. Initialize terraform by `terraform init -backend-config=[yours-bucket-name]` (replace `[yours-bucket-name]` with yours terraform state bucket name).
+4. Optional `terraform plan -var-file="gcp.tfvars"` to see changes to do.
+5. Make the changes by `terraform apply -var-file="gcp.tfvars"`.
 
 ### Cloud Build
 Prerequrements: 
@@ -24,14 +30,15 @@ Prerequrements:
 - Any bucket in Cloud Storage for save the terraform state.
 
 Steps:
-1. Go to GCP "Console" webapp.
-2. Go to `Cloud Build -> Triggers`.
-3. Click "Create trigger".
-4. Fill name, region, Event (I preffer `Manual invocation` for that changes), Source.
-5. Fill `Cloud Build configuration file location` by `Infra/infra-deploy.yaml`.
-6. Add `Substitution variables` variable `_BUCKET` and set yours terraform state bucket name.
-7. Make sure yours build service have access to creating Service Accounts or make a special Service account for this build and fill `Service account` field.
-8. Click `Save` and run created build
+1. Put `gcp.tfvars` on top directory in yours terraform state bucket.
+2. Go to GCP "Console" webapp.
+3. Go to `Cloud Build -> Triggers`.
+4. Click "Create trigger".
+5. Fill name, region, Event (I preffer `Manual invocation` for that changes), Source.
+6. Fill `Cloud Build configuration file location` by `Infra/infra-deploy.yaml`.
+7. Add `Substitution variables` variable `_BUCKET` and set yours terraform state bucket name.
+8. Make sure yours build service have access to creating Service Accounts or make a special Service account for this build and fill `Service account` field.
+9. Click `Save` and run created build
 
 ## Rasperry Pi computer preparation
 This project was created and tested on Rasperry Pi Zero W, but contains unchanged commands from [Getting started with pico](https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf) targeted to Raspberry Pi 4B. There is good chance it will work on all curently avaiable Raspberry Pi computers.  
